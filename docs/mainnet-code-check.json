@@ -1,0 +1,48 @@
+{
+  "block": 26256680,
+  "contracts": {
+    "PoolManager": {
+      "address": "0x000000000004444c5dc75cB358380D2e3dE08A90",
+      "codeBytes": 24009,
+      "codeHash": "0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293"
+    },
+    "FWA": {
+      "address": "0xa0Df17B5aC76ABaBA36E1450E2cbCd18A620C845",
+      "codeBytes": 11394,
+      "codeHash": "0xd07b0280e4e25689956cff42290d843739714308e6fbe693017cede05c2c52fd"
+    },
+    "FWA V2": {
+      "address": "0x958C41181182e76F221331b2755b77D9e1426A98",
+      "codeBytes": 24390,
+      "codeHash": "0xaa6ab920a786de0480fe557a7e074ff86cae3e79cb26a9553e4e04e6da37e6a9"
+    },
+    "Universal Router": {
+      "address": "0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af",
+      "codeBytes": 19499,
+      "codeHash": "0x6a5f46971b50c6e1b7eef97902311444e479d734e4f80ad88367783cf373fe7f"
+    },
+    "registry": {
+      "address": "0xDf99bd1218E7EB288CfFeCF9775385167Bb09B2D",
+      "codeBytes": 881,
+      "codeHash": "0xdf483e36c72b59889fab0cd446d546ff666ea29937d5aff4d73370188bddf8a6"
+    },
+    "Intake": {
+      "address": "0xa43e6f75ee006411f79ac1c84120606c2330de82",
+      "codeBytes": 7384,
+      "codeHash": "0xdf76139e1b7dfe05bdf55e48e65076e4763a40d470fcf5da58034a488e30bdaf"
+    },
+    "IMD": {
+      "address": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+      "codeBytes": 22990,
+      "codeHash": "0x79a1ae149d27d4aae006d4dd75cb834222c9623799bbf34359428aaf66fec3bf"
+    },
+    "Playground": {
+      "address": "0x04454514ad6dc4c01d7064c308f8853183fdd39c",
+      "codeBytes": 44,
+      "codeHash": "0x0692d21687ad9ed7a3c3cb01c9d0bb877c5f290e1efa4e466a7843dbbb89bbbe"
+    }
+  },
+  "observations": {
+    "FWA.isDistributor(PoolManager)": true
+  }
+}

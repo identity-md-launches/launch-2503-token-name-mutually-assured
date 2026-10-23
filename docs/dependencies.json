@@ -1,0 +1,27 @@
+[
+  {
+    "repository": "https://github.com/Uniswap/v4-core",
+    "ref": "59d3ecf53afa9264a16bba0e38f4c5d2231f80bc",
+    "commit": "59d3ecf53afa9264a16bba0e38f4c5d2231f80bc"
+  },
+  {
+    "repository": "https://github.com/Vectorized/solady",
+    "ref": "2afba69bf67b78dd4abeadcc696052b3a6f71499",
+    "commit": "2afba69bf67b78dd4abeadcc696052b3a6f71499"
+  },
+  {
+    "repository": "https://github.com/foundry-rs/forge-std",
+    "ref": "v1.9.7",
+    "commit": "77041d2ce690e692d6e03cc812b57d1ddaa4d505"
+  },
+  {
+    "repository": "https://github.com/OpenZeppelin/openzeppelin-contracts",
+    "ref": "v5.4.0",
+    "commit": "c64a1edb67b6e3f4a15cca8909c9482ad33a02b0"
+  },
+  {
+    "repository": "https://github.com/transmissions11/solmate",
+    "ref": "main",
+    "commit": "89365b880c4f3c786bdd453d4b8e8fe410344a69"
+  }
+]
