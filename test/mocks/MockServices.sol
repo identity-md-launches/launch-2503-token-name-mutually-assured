@@ -90,6 +90,26 @@ contract MockFwaV2 is IFWAV2 {
         nft.mint(address(this), id);
     }
 
+    /// @dev Relisting: a holder re-deposits an existing NFT and the draw allocates it again.
+    /// Ownership is deliberately unchecked so tests can exercise the helper's own guards.
+    function fulfillWith(uint256 id, uint256 tokenId) external {
+        Acquisition storage a = _acquisitions[id];
+        require(a.status == 1);
+        a.status = 2;
+        a.listingId = id;
+        _listings[id] = Listing(
+            address(nft), address(this), a.purchaser, tokenId, 1, 1 ether, 0, 0, 0, uint64(block.timestamp), 2
+        );
+    }
+
+    /// @dev FWA V2 delivers an unsettled allocation to its purchaser once the window has passed.
+    function finalizeUnsettled(uint256 id) external {
+        Listing storage l = _listings[id];
+        require(l.status == 2 && block.timestamp >= uint256(l.allocatedAt) + settlementWindow);
+        l.status = 4;
+        nft.safeTransferFrom(address(this), l.purchaser, l.tokenId);
+    }
+
     function refund(uint256 id) external {
         Acquisition storage a = _acquisitions[id];
         require(a.status == 1);

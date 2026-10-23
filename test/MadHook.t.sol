@@ -102,6 +102,49 @@ contract MadHookTest is MadFixture {
         }
     }
 
+    function test_excessAboveManagerFloatIsDeferredThenBurnedBySwapOrBurnExcess() public {
+        _enable();
+        fwa.mint(alice, 20_000_000 ether);
+        uint256 float = fwa.balanceOf(address(manager));
+        assertLt(float, 11_760_000 ether);
+        uint256 fwaId = uint256(uint160(FWA));
+        _swap(true, -12_000_000 ether);
+        assertEq(hook.totalBurned(), 11_760_000 ether);
+        assertEq(hook.playgroundFwaClaims() + hook.nftFwaClaims(), 120_000 ether);
+        uint256 pending = hook.pendingBurnClaims();
+        assertEq(pending, 11_760_000 ether - float, "only the float burned physically");
+        assertEq(fwa.burned(), float);
+        assertEq(manager.balanceOf(address(hook), fwaId), 120_000 ether + pending, "deferred part is a claim");
+        assertEq(fwa.balanceOf(address(hook)), 0);
+        assertGe(fwa.balanceOf(address(manager)), 120_000 ether + pending, "claims are fully backed");
+        // The next swap's collection burns the backlog alongside its own excess.
+        _swap(true, -1000 ether);
+        assertEq(hook.pendingBurnClaims(), 0);
+        assertEq(fwa.burned(), 11_760_000 ether + 980 ether);
+        assertEq(hook.totalBurned(), fwa.burned());
+        assertEq(manager.balanceOf(address(hook), fwaId), hook.playgroundFwaClaims() + hook.nftFwaClaims());
+        assertEq(hook.burnExcess(), 0);
+    }
+
+    function test_burnExcessFlushesOnlyPendingClaimsAndNeverRevenue() public {
+        _enable();
+        fwa.mint(alice, 20_000_000 ether);
+        _swap(true, -12_000_000 ether);
+        uint256 pending = hook.pendingBurnClaims();
+        assertGt(pending, 0);
+        uint256 burnedBefore = fwa.burned();
+        uint256 playground = hook.playgroundFwaClaims();
+        uint256 nft = hook.nftFwaClaims();
+        assertEq(hook.burnExcess(), pending);
+        assertEq(hook.pendingBurnClaims(), 0);
+        assertEq(fwa.burned(), burnedBefore + pending);
+        assertEq(hook.playgroundFwaClaims(), playground);
+        assertEq(hook.nftFwaClaims(), nft);
+        assertEq(manager.balanceOf(address(hook), uint256(uint160(FWA))), playground + nft);
+        assertEq(hook.payout(), playground);
+        assertEq(fwa.balanceOf(address(hook)), 0);
+    }
+
     function test_playgroundPayoutIsDirectFwaAndNeverConvertsOrPaysTwice() public {
         _enable();
         _swap(true, -1000 ether);

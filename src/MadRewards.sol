@@ -178,24 +178,38 @@ contract MadRewards is MadBase, OracleAttestationConsumer, IERC721Receiver {
         // This permits settlement before enablement without exposing a purchase bypass.
         IFWAV2 source = p.source == address(0) ? fwaV2 : IFWAV2(p.source);
         IFWAV2.Acquisition memory a = source.acquisitions(requestId);
-        if (a.purchaser != address(this) || a.status != 2 || a.listingId == 0) revert InvalidPurchase();
+        if (a.purchaser != address(this) || a.listingId == 0) revert InvalidPurchase();
         IFWAV2.Listing memory listing = source.listings(a.listingId);
-        if (listing.purchaser != address(this) || listing.status != 2 || listing.collection.code.length == 0)
-        {
+        if (listing.purchaser != address(this) || listing.collection.code.length == 0) {
             revert InvalidPurchase();
-        }
-        if (block.timestamp >= uint256(listing.allocatedAt) + source.settlementWindow()) {
-            revert WindowClosed();
         }
         bytes32 nft = keccak256(abi.encode(listing.collection, listing.tokenId));
         if (registeredNFT[nft]) revert InvalidPurchase();
+        // FWA V2 also delivers an unsettled allocation to its purchaser after the window
+        // (finalizeUnsettled, depositor reclaim, stuck recovery). An NFT this helper already
+        // owns from its own allocation is adopted as-is; otherwise keep it inside the window.
+        bool held = _ownedHere(listing.collection, listing.tokenId);
+        if (!held) {
+            if (a.status != 2 || listing.status != 2) revert InvalidPurchase();
+            if (block.timestamp >= uint256(listing.allocatedAt) + source.settlementWindow()) {
+                revert WindowClosed();
+            }
+        }
         p.source = address(source);
         p.claimed = true;
         registeredNFT[nft] = true;
-        source.keepNFT(a.listingId);
+        if (!held) source.keepNFT(a.listingId);
         if (IERC721(listing.collection).ownerOf(listing.tokenId) != address(this)) revert InvalidPurchase();
         keptNFTs.push(Prize(listing.collection, listing.tokenId));
         emit Kept(requestId, listing.collection, listing.tokenId);
+    }
+
+    function _ownedHere(address collection, uint256 tokenId) private view returns (bool) {
+        try IERC721(collection).ownerOf(tokenId) returns (address holder) {
+            return holder == address(this);
+        } catch {
+            return false;
+        }
     }
 
     function recoverRefund(address source) external nonReentrant returns (uint256 amount) {
@@ -291,10 +305,9 @@ contract MadRewards is MadBase, OracleAttestationConsumer, IERC721Receiver {
         Request storage p = requests[id];
         Round storage r = rounds[p.round];
         if (!p.active || msg.sender != p.intake || r.requestId != id) revert UnknownRequest();
-        if (
-            block.timestamp >= uint256(r.closedAt) + WINNER_DEADLINE
-                || block.timestamp >= uint256(p.askedAt) + REQUEST_TIMEOUT
-        ) revert WindowClosed();
+        // The 6h timeout only lets askWinner supersede a request; until it does, the still-live
+        // request's first valid answer counts up to the round's 72h deadline.
+        if (block.timestamp >= uint256(r.closedAt) + WINNER_DEADLINE) revert WindowClosed();
         if (r.winner != address(0) || r.beneficiary != address(0) || r.awarded) revert AlreadyAwarded();
         if (
             a.questionHash != p.questionHash || a.chainId != 1 || block.chainid != 1 || a.fromBlock != r.first
@@ -350,11 +363,16 @@ contract MadRewards is MadBase, OracleAttestationConsumer, IERC721Receiver {
             emit BeneficiaryFixed(round, to);
         }
         r.awarded = true;
+        // Registration only guards an NFT while this helper holds it: a delivered prize may be
+        // relisted in FWA V2 and drawn again later, and then it must be keepable again.
+        bytes32 nft = keccak256(abi.encode(r.collection, r.tokenId));
+        registeredNFT[nft] = false;
         try IERC721(r.collection).safeTransferFrom(address(this), to, r.tokenId) {
             delivered = true;
             emit Awarded(round, to);
         } catch {
             r.awarded = false;
+            registeredNFT[nft] = true;
             emit AwardDeferred(round, to);
         }
     }

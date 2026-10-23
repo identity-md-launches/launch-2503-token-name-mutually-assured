@@ -2,7 +2,7 @@
 pragma solidity 0.8.26;
 
 import {MadFixture, MadToken, MadBase, MadRewards, MockERC20} from "./MadFixture.sol";
-import {MockFwaV2, MockIntake, NFTReceiver} from "./mocks/MockServices.sol";
+import {MockFwaV2, MockIntake, MockNFT, NFTReceiver} from "./mocks/MockServices.sol";
 import {OracleAttestation} from "../src/oracle/OracleAttestation.sol";
 import {OracleQuestion} from "../src/oracle/OracleQuestion.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
@@ -389,6 +389,102 @@ contract MadRewardsTest is MadFixture {
         assertEq(source.nft().ownerOf(_round(1).tokenId), address(receiver));
         vm.expectRevert(MadRewards.AlreadyAwarded.selector);
         rewards.award(1);
+    }
+
+    function test_lateDeliveredNftIsAdoptedAsPrizeOnlyOnceHeld() public {
+        uint256 id = _buy();
+        source.fulfill(id);
+        vm.warp(vm.getBlockTimestamp() + 3600);
+        // Still at the pool after the window: nothing to adopt, keepNFT is closed.
+        vm.expectRevert(MadRewards.WindowClosed.selector);
+        rewards.claim(id);
+        source.finalizeUnsettled(id);
+        assertEq(source.nft().ownerOf(id), address(rewards));
+        assertEq(source.listings(id).status, 4);
+        rewards.claim(id);
+        assertEq(rewards.prizeCount(), 1);
+        (, bool claimed) = rewards.purchases(id);
+        assertTrue(claimed);
+        vm.expectRevert(MadRewards.InvalidPurchase.selector);
+        rewards.claim(id);
+        // The adopted NFT is a normal prize: it can be assigned and awarded.
+        vm.prank(alice, alice);
+        mad.freeze(bob);
+        vm.roll(vm.getBlockNumber() + 7200);
+        rewards.closeRound();
+        assertEq(_round(1).tokenId, id);
+    }
+
+    function test_adoptRequiresOwnAllocationNotMereOwnership() public {
+        // An NFT handed to the helper outside its own allocation is never adopted through a
+        // listing allocated to someone else, and a never-fulfilled draw cannot adopt anything.
+        uint256 id = _buy();
+        source.nft().mint(address(rewards), 777);
+        vm.expectRevert(MadRewards.InvalidPurchase.selector);
+        rewards.claim(id);
+        assertEq(rewards.prizeCount(), 0);
+    }
+
+    function test_relistedFormerPrizeCanBeKeptAgainButNotWhileHeld() public {
+        uint256 first = _buy();
+        source.fulfill(first);
+        rewards.claim(first);
+        uint256 tokenId = first;
+        // While the helper holds the prize, a second allocation of the same NFT cannot be kept.
+        uint256 dup = _buy();
+        source.fulfillWith(dup, tokenId);
+        vm.expectRevert(MadRewards.InvalidPurchase.selector);
+        rewards.claim(dup);
+        assertEq(rewards.prizeCount(), 1);
+        vm.prank(alice, alice);
+        mad.freeze(bob);
+        vm.roll(vm.getBlockNumber() + 7200);
+        rewards.closeRound();
+        vm.warp(vm.getBlockTimestamp() + 72 hours);
+        assertTrue(rewards.award(1));
+        assertEq(source.nft().ownerOf(tokenId), alice);
+        assertFalse(rewards.registeredNFT(keccak256(abi.encode(address(source.nft()), tokenId))));
+        // The winner relists the prize and the helper draws it again.
+        MockNFT prizeNft = source.nft();
+        vm.prank(alice);
+        prizeNft.transferFrom(alice, address(source), tokenId);
+        uint256 second = _buy();
+        source.fulfillWith(second, tokenId);
+        rewards.claim(second);
+        assertEq(source.nft().ownerOf(tokenId), address(rewards));
+        assertEq(rewards.prizeCount(), 2);
+        assertTrue(rewards.registeredNFT(keccak256(abi.encode(address(source.nft()), tokenId))));
+    }
+
+    function test_deferredAwardKeepsRegistrationSoPrizeCannotBeReKept() public {
+        bytes32 id = _ask();
+        NFTReceiver receiver = new NFTReceiver();
+        OracleAttestation.Attestation memory a = _answer(id, address(receiver));
+        (bool ok,) = oracle.deliver(id, a, _sign(a));
+        assertTrue(ok);
+        assertFalse(rewards.award(1));
+        uint256 tokenId = _round(1).tokenId;
+        assertTrue(rewards.registeredNFT(keccak256(abi.encode(address(source.nft()), tokenId))));
+        uint256 again = _buy();
+        source.fulfillWith(again, tokenId);
+        vm.expectRevert(MadRewards.InvalidPurchase.selector);
+        rewards.claim(again);
+        assertEq(rewards.prizeCount(), 1);
+    }
+
+    function test_unsupersededAnswerAfterSixHoursStillAccepted() public {
+        bytes32 id = _ask();
+        vm.warp(vm.getBlockTimestamp() + 6 hours);
+        OracleAttestation.Attestation memory a = _answer(id, bob);
+        a.issuedAt = uint64(vm.getBlockTimestamp() - 60);
+        a.expiresAt = a.issuedAt + 3600;
+        (bool ok,) = oracle.deliver(id, a, _sign(a));
+        assertTrue(ok);
+        assertEq(_round(1).winner, bob);
+        (,,,,, bool active) = rewards.requests(id);
+        assertFalse(active);
+        vm.expectRevert(MadRewards.AlreadyAwarded.selector);
+        rewards.askWinner(1);
     }
 
     function test_adminSettersRejectNonOwnerAndNoWithdrawOrResultSetter() public {

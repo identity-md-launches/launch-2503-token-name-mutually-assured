@@ -42,7 +42,10 @@ contract MadHook is MadBase {
     uint256 public playgroundFwaClaims;
     uint256 public nftFwaClaims;
     uint256 public nftEthClaims;
+    /// @notice Excess fee committed to burning, including any part still held as a claim.
     uint256 public totalBurned;
+    /// @notice Excess fee held as FWA ERC-6909 claims until the manager's float can burn it.
+    uint256 public pendingBurnClaims;
 
     struct PendingSwap {
         bytes32 context;
@@ -77,6 +80,8 @@ contract MadHook is MadBase {
     event ConversionDeferred(uint256 fwaClaims);
     event PlaygroundPaid(uint256 fwaAmount);
     event NFTBudgetRedeemed(uint256 ethAmount);
+    event BurnDeferred(uint256 fwaAmount);
+    event ExcessBurned(uint256 fwaAmount);
 
     constructor(IPoolManager manager_, MadToken token_, address factory_) {
         if (address(manager_) == address(0) || address(token_) == address(0) || factory_ == address(0)) {
@@ -280,8 +285,29 @@ contract MadHook is MadBase {
         if (permanent != 0) poolManager.mint(address(this), fwa.toId(), permanent);
         if (excess != 0) {
             totalBurned += excess;
-            poolManager.take(fwa, address(this), excess);
-            IFWAToken(FWA).burn(excess);
+            // The buyer settles its FWA input only after this callback, so a physical take
+            // is funded by whatever FWA the manager already holds. Burn what the float covers
+            // now and hold the rest as a burn-only claim; the swap's own settlement backs it.
+            uint256 pending = pendingBurnClaims;
+            uint256 physical = excess + pending;
+            uint256 liquid = IFWAToken(FWA).balanceOf(address(poolManager));
+            if (physical > liquid) physical = liquid;
+            if (physical >= excess) {
+                uint256 fromClaims = physical - excess;
+                if (fromClaims != 0) {
+                    pendingBurnClaims = pending - fromClaims;
+                    poolManager.burn(address(this), fwa.toId(), fromClaims);
+                }
+            } else {
+                uint256 deferred = excess - physical;
+                pendingBurnClaims = pending + deferred;
+                poolManager.mint(address(this), fwa.toId(), deferred);
+                emit BurnDeferred(deferred);
+            }
+            if (physical != 0) {
+                poolManager.take(fwa, address(this), physical);
+                IFWAToken(FWA).burn(physical);
+            }
         }
         emit Fees(base, fee, playground, nft, excess);
     }
@@ -334,12 +360,29 @@ contract MadHook is MadBase {
         paid = abi.decode(poolManager.unlock(""), (uint256));
     }
 
+    /// @notice Burns excess fee still held as FWA claims, as far as the manager's float allows.
+    function burnExcess() external nonReentrant returns (uint256 burned) {
+        _unlockMode = 3;
+        burned = abi.decode(poolManager.unlock(""), (uint256));
+    }
+
     function unlockCallback(bytes calldata) external onlyManager returns (bytes memory) {
         uint8 mode = _unlockMode;
         if (mode == 0) revert Unauthorized();
         _unlockMode = 0;
         uint256 paid;
-        if (mode == 1) {
+        if (mode == 3) {
+            paid = pendingBurnClaims;
+            uint256 liquid = IFWAToken(FWA).balanceOf(address(poolManager));
+            if (paid > liquid) paid = liquid;
+            pendingBurnClaims -= paid;
+            if (paid != 0) {
+                poolManager.burn(address(this), Currency.wrap(FWA).toId(), paid);
+                poolManager.take(Currency.wrap(FWA), address(this), paid);
+                IFWAToken(FWA).burn(paid);
+            }
+            emit ExcessBurned(paid);
+        } else if (mode == 1) {
             paid = playgroundFwaClaims;
             uint256 liquid = IFWAToken(FWA).balanceOf(address(poolManager));
             if (paid > liquid) paid = liquid;
