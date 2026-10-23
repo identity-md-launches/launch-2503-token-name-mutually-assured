@@ -1,0 +1,33 @@
+{
+  "kind": "univ4_hook",
+  "hook": {
+    "contract": "MadHook",
+    "constructorArgs": [
+      "$poolManager",
+      "$token",
+      "$factory"
+    ],
+    "permissions": [
+      "beforeInitialize",
+      "beforeSwap",
+      "afterSwap",
+      "beforeSwapReturnDelta",
+      "afterSwapReturnDelta"
+    ]
+  },
+  "token": {
+    "contract": "MadToken",
+    "name": "Mutually Assured Destruction",
+    "symbol": "MAD",
+    "decimals": 18,
+    "constructorArgs": [],
+    "totalSupply": "1000000000000000000000000000"
+  },
+  "pool": {
+    "pairedCurrency": "0xa0df17b5ac76ababa36e1450e2cbcd18a620c845",
+    "fee": 12500,
+    "tickSpacing": 60,
+    "initialPrice": "79228162514264337593543950336"
+  },
+  "notes": "MadToken is a Solady ERC20 whose no-argument constructor mints 1,000,000,000 MAD with 18 decimals to msg.sender and records that deployer as factory. There is no later mint or transfer tax. MadToken, MadHook and the constructor-deployed MadRewards inherit the fixed owner 0xfc3c962fad2c1cc77f1a0d46e7b8a2de79a21774; none takes an owner constructor argument. Token deployment and factory initialization must occur in the same transaction: beforeInitialize authenticates the PoolManager, factory and MAD/FWA key at fee 12500 and spacing 60, then binds once using the token's transient constructor bootstrap. The factory must fund the authenticated swarm distributor before binding for its identity to be captured; its outflows remain locked until the owner irreversibly enables trading. Frozen senders are checked before exemptions; PoolManager transfers consume this pool's signed transient net MAD allowance except factory liquidity and fee collection. Other transfers require distributor exemption or direct no-code wallet participation. Buys require an approved take-only router; Universal Router starts approved. Distributor custody, the registry and approved routers are trusted. A direct wallet freeze costs floor(target balance/100), burns floor(cost/2), credits the rest to the target and resets its freeze to 24 hours. Only the exact internal freeze payment bypasses ordinary gates. MadHook charges FWA fees in both directions and exact modes, decaying from 99% to 1% over 1800 seconds after enablement, in addition to the pool's 1.25% LP fee. Permanent revenue is floor(gross FWA base/100), split equally with any odd wei going to NFTs; excess fees are burned as FWA in the same swap. Public payout redeems only Playground FWA claims directly from PoolManager to the fixed receiver 0x04454514ad6dc4c01d7064c308f8853183fdd39c. Only NFT FWA claims convert on the configured ETH/FWA market during a MAD swap. Owner conversion bounds start unset and must be configured; unsold claims wait, and only received ETH funds NFT purchases. MadRewards supports public FWA V2 purchases, ungated in-window NFT settlement, refunds and round awards. Closing requires a kept NFT, at least 7200 blocks and leader spending of at least 1000 MAD. Oracle requests use donated IMD after an eight-block delay; the saved leader is the fallback after 72 hours without a valid winner. Keeper calls and valid external protocol settings remain necessary. The manifest initialPrice is the required reference value; deployment derives the opening price from launch policy and token ordering."
+}
