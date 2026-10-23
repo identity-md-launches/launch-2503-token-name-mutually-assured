@@ -2,6 +2,38 @@
 
 This report describes worker-side checks of the MAD website. It is not an independent audit or a network certification.
 
+## Revision validation, 2026-10-23
+
+This revision addresses the four reported website defects and preserves the accepted contracts, ABIs, deployment handoff, fees, routes, dependencies and build configuration. The sections below this revision record retain the original implementation’s evidence; Solidity checks listed there were not repeated for this frontend-only revision.
+
+All four reports reproduced in Chromium against the accepted `dist/` before editing. Delaying the quote snapshot, then selecting Sell, produced a “Swap MAD for FWA” review whose decoded Universal Router settlement actually spent FWA and received MAD. Changing amount, slippage or deadline also allowed obsolete quotes to publish. A chain-137 mock wallet rejecting switching made Disconnect unreachable and intercepted five navigation centers at both 320 and 390px. Both NFT ID forms lacked error associations and used the same remote error.
+
+| Finding and final source | Correction and recheck |
+| --- | --- |
+| High, quote race; `web/src/TradePage.tsx:28` | Request generations invalidate on all four form changes and unmount. Superseded results, errors and loading updates are ignored. Rendered quotes and approval/swap preflight require the current generation, direction, inputs and parsed amount; review assets derive from that quote. Delayed requests, edits back to the original value, old errors, navigation, out-of-order completion, edits during all three preflight paths, buy/sell encoding and both approval spenders pass. |
+| Medium, wrong-network disconnect; `web/src/Wallet.tsx:107` | The header always opens the existing wallet dialog. Switch and Disconnect remain available after a rejected switch; current chain and pending-switch state are explicit. Rejection, reopening and disconnect pass at 320, 390 and 1440px. |
+| Medium, obstructed navigation; `web/src/Wallet.tsx:128`, `web/src/style.css:333` | Removed the floating error and its CSS. Errors remain inside the dialog and clear on close. Escape restores focus; all six navigation centers hit their link and all six links can be clicked at each tested width. |
+| Medium, detached NFT form errors; `web/src/Rounds.tsx:120`, `:425`, `:562` | Separate adjacent errors, field-specific copy, `aria-invalid`, `aria-describedby` and focus on invalid submission. Acquisition error measured at y=395.86–418.25 and round error at y=715.25–760.03 in the 390×844 viewport. Independent clearing and uint256 overflow feedback pass. |
+
+The new `web/scripts/revision-check.mjs` runs against the production export and writes only temporary evidence under `test/scratch/revision/`. Contract code, deployment bindings, ABIs and receiver registration are retained and read through Ethereum. Its explicit trade fixture supplies open trading, active liquidity, current timestamps, wallet balances/allowances and successful swap/approval simulations. It tests browser behavior when the currently closed pool eventually opens; fixture simulations do not establish live swap availability. Its mock wallet prohibits every signature and transaction send. The original wallet suite separately uses real onchain simulations and synthetic wallet/receipt responses to check rejection and post-confirmation refresh.
+
+Dependencies were installed from the unchanged lockfile into an exact temporary copy of `web/` at `/tmp/mad-revision-build/web`; repository dependency directories and package/build files were not modified. Actual build commands were `npm --prefix /tmp/mad-revision-build/web run typecheck` and `npm --prefix /tmp/mad-revision-build/web run build -- --outDir <repository>/dist`. The quote runner and new revision runner used that same dependency copy; existing browser/wallet runners used the repository scripts. Public Ethereum source: `https://ethereum-rpc.publicnode.com`; the supplied worker relay was used for read-only checks and is not embedded in outputs. README commands reproduce the checks after a normal `npm --prefix web ci`.
+
+| Revision check | Actual result |
+| --- | --- |
+| Unchanged-lockfile dependency installation | Passed; 53 packages, audit reported zero vulnerabilities |
+| Typecheck and production build | Passed; final relative-asset export in `dist/` |
+| Quote/reference/encoding suite | 142 passed |
+| New regression suite | 24 scenario groups passed; zero signing or sends |
+| Existing live browser suite | 24 checks passed, including read-only routes, primary action, unavailable live trading and no uncaught exceptions |
+| Existing wallet suite | 9 checks passed, including actual role/preflight reads, rejection, synthetic receipt refresh and stale RPC handling |
+| Pinned design probe | 16/16 passed at 320, 390 and 1440; reduced-motion and metadata checks included |
+| Visual inspection | Viewed entry screen at 390, wrong-network rejection at 320, both adjacent NFT errors at 390 and buy/sell reviews |
+
+Better Interface coverage for the affected components: **Accessibility checked** through field associations/focus and dialog Escape/focus return; **Layout checked** through navigation hit tests, real clicks, screenshots and the overflow probe; **Writing checked** through exact asset/amount/spender comparisons and specific recovery copy; **Typography checked** through the unchanged six-step scale and probe; **Colors checked** through reused status tokens and the entry probe’s rendered contrast check; **UI checked** through cancellation, loading, error, rejection, disconnect and review states. No new visual system or unrelated screen redesign was introduced. Native screen-reader output, physical wallet apps, WebKit, RTL, browser-native 200% zoom and separate contrast measurements of every error state remain unperformed. Build advisories about the existing large chunk and unused dependency’s browser externalization remain unchanged.
+
+`docs/website-revision-check-results.json` records the reproduction and final check summaries plus current export hashes. Temporary screenshots are deliberately excluded from submission. `.imd-responses.json` answers all four exact finding IDs. Complete for this revision’s scope; no mainnet transaction was signed, broadcast or deployed.
+
 ## Scope and evidence
 
 Read the pinned project history, network and deployment handoffs; all three application contracts and interfaces; existing tests, runtime fixtures and verification notes. The complete original objective was retrieved from the [parent pull request](https://github.com/identity-md-launches/launch-2503-token-name-mutually-assured/pull/1), because the pinned history excerpt truncates it. The lineage contains one completed contract project and no previous website to replace.

@@ -55,9 +55,12 @@ export function WalletControl({ rt }: { rt: Runtime }) {
   useEffect(() => {
     if (open) {
       dialog.current?.showModal();
-    } else if (dialog.current?.open) {
-      dialog.current.close();
-      trigger.current?.focus();
+    } else {
+      setError("");
+      if (dialog.current?.open) {
+        dialog.current.close();
+        trigger.current?.focus();
+      }
     }
   }, [open]);
   useEffect(() => {
@@ -80,7 +83,7 @@ export function WalletControl({ rt }: { rt: Runtime }) {
       await connectAsync({ connector: c });
       setOpen(false);
     } catch (e) {
-      setError(errText(e));
+      if (dialog.current?.open) setError(errText(e));
     }
   }
   async function switchNetwork() {
@@ -91,7 +94,7 @@ export function WalletControl({ rt }: { rt: Runtime }) {
         addEthereumChainParameter: rt.d.walletAddChain as any,
       });
     } catch (e) {
-      setError(errText(e));
+      if (dialog.current?.open) setError(errText(e));
     }
   }
   return (
@@ -101,15 +104,13 @@ export function WalletControl({ rt }: { rt: Runtime }) {
           <button
             ref={trigger}
             className="button wallet-button"
-            onClick={() =>
-              chainId !== 1 ? void switchNetwork() : setOpen(true)
-            }
+            onClick={() => setOpen(true)}
           >
             <Wallet size={16} />
             {switching
               ? "Switching…"
               : chainId !== 1
-                ? "Switch to Ethereum"
+                ? "Wallet · wrong network"
                 : short(getAddress(address))}
           </button>
         </>
@@ -122,11 +123,6 @@ export function WalletControl({ rt }: { rt: Runtime }) {
           <Wallet size={16} />
           Connect<span className="desktop-only"> wallet</span>
         </button>
-      )}
-      {error && !open && (
-        <span className="wallet-error" role="alert">
-          {error}
-        </span>
       )}
       <dialog
         ref={dialog}
@@ -152,13 +148,18 @@ export function WalletControl({ rt }: { rt: Runtime }) {
         {isConnected && address ? (
           <>
             <p className="address">{getAddress(address)}</p>
-            <p>Ethereum mainnet · Chain 1</p>
+            <p>
+              {chainId === 1
+                ? "Ethereum mainnet · Chain 1"
+                : `Wallet network: chain ${chainId ?? "unavailable"}. Switch to Ethereum (chain 1) to transact.`}
+            </p>
             {chainId !== 1 && (
               <button
                 className="button primary"
+                disabled={switching}
                 onClick={() => void switchNetwork()}
               >
-                Switch to Ethereum
+                {switching ? "Switching…" : "Switch to Ethereum"}
               </button>
             )}
             <button

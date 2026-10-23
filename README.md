@@ -51,9 +51,12 @@ This read-only check uses the public RPC in the saved handoff by default. An opt
 npm --prefix web run test:quotes
 PLAYWRIGHT_BROWSERS_PATH=/opt/imd-tools/ms-playwright node web/scripts/browser-check.mjs
 PLAYWRIGHT_BROWSERS_PATH=/opt/imd-tools/ms-playwright node web/scripts/wallet-check.mjs
+PLAYWRIGHT_BROWSERS_PATH=/opt/imd-tools/ms-playwright node web/scripts/revision-check.mjs
 ```
 
 The browser scripts use the supplied Playwright module, run their own bounded local static server, and write temporary results to `test/scratch/`. Each accepts an optional public or worker-provided Ethereum RPC argument. The wallet suite uses a clearly identified mock EIP-1193 signing provider and a mock receipt; it never broadcasts a transaction. Its contract reads and preflight simulations use the real Ethereum contracts.
+
+The revision suite checks quote cancellation and out-of-order responses, exact buy/sell review assets and approval spenders, wrong-network rejection/disconnect/navigation, and adjacent NFT field errors. It uses controlled trading/liquidity/balance/allowance and simulation fixtures while retaining real deployed code and binding checks; it blocks all signing and sends. This is not a live-swap rehearsal. Its `--baseline` mode reproduces the four review findings against the original accepted export. See the revision section in `VALIDATION.md` for the current results.
 
 Actual results: production build and typecheck passed; **142** quote/encoding/reference checks passed; **128** existing Solidity tests passed; live browser interactions and wallet-state checks passed; the pinned design probe passed **16/16**. A fresh `npm ci` succeeded and npm audit reported **zero vulnerabilities**. Vite emits a chunk-size advisory and an unused dependency’s browser-externalization advisory; no corresponding browser exception or missing runtime resource was observed.
 

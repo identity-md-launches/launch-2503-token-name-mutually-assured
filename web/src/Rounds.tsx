@@ -14,7 +14,8 @@ export function RoundsPage({ rt, state, wallet }: PageProps) {
     [request, setRequest] = useState<bigint>(),
     [roundInput, setRoundInput] = useState(""),
     [selectedRound, setSelectedRound] = useState<bigint>(),
-    [error, setError] = useState("");
+    [requestError, setRequestError] = useState(""),
+    [roundError, setRoundError] = useState("");
   const canWrite =
     state.safe && wallet.chainId === 1 && !!wallet.address && !tx.busy;
   const queue = useQuery({
@@ -99,7 +100,6 @@ export function RoundsPage({ rt, state, wallet }: PageProps) {
     args: readonly unknown[] = [],
     check?: Action["check"],
   ) {
-    setError("");
     await tx.prepare({
       title,
       address: rt.addresses[name],
@@ -117,18 +117,26 @@ export function RoundsPage({ rt, state, wallet }: PageProps) {
       check,
     });
   }
-  function parseId(v: string, set: (n: bigint) => void) {
+  function parseId(
+    v: string,
+    set: (n: bigint) => void,
+    setError: (message: string) => void,
+    field: "acquisition request ID" | "round number",
+  ) {
     setError("");
     if (!/^[1-9][0-9]*$/.test(v) || v.length > 78) {
-      setError("Enter a positive decimal ID.");
-      return;
+      setError(`Enter a positive decimal ${field}.`);
+      return false;
     }
     const n = BigInt(v);
     if (n >= 1n << 256n) {
-      setError("This ID exceeds uint256.");
-      return;
+      setError(
+        `${field[0].toUpperCase()}${field.slice(1)} must be smaller than 2^256.`,
+      );
+      return false;
     }
     set(n);
+    return true;
   }
   return (
     <>
@@ -401,20 +409,35 @@ export function RoundsPage({ rt, state, wallet }: PageProps) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              parseId(requestInput, setRequest);
+              if (
+                !parseId(
+                  requestInput,
+                  setRequest,
+                  setRequestError,
+                  "acquisition request ID",
+                )
+              )
+                e.currentTarget.querySelector("input")?.focus();
             }}
           >
             <label htmlFor="request-id">Acquisition request ID</label>
             <input
               id="request-id"
+              aria-invalid={!!requestError}
+              aria-describedby={requestError ? "request-id-error" : undefined}
               inputMode="numeric"
               value={requestInput}
               onChange={(e) => {
                 setRequestInput(e.target.value);
-                setError("");
+                setRequestError("");
               }}
               placeholder="Decimal request ID"
             />
+            {requestError && (
+              <p id="request-id-error" className="error">
+                {requestError}
+              </p>
+            )}
             <button className="button full" type="submit">
               Inspect acquisition
             </button>
@@ -525,19 +548,37 @@ export function RoundsPage({ rt, state, wallet }: PageProps) {
           className="inline-form"
           onSubmit={(e) => {
             e.preventDefault();
-            parseId(roundInput, setSelectedRound);
+            if (
+              !parseId(
+                roundInput,
+                setSelectedRound,
+                setRoundError,
+                "round number",
+              )
+            )
+              e.currentTarget.querySelector("input")?.focus();
           }}
         >
-          <label htmlFor="round-id">
-            Round number
+          <div className="id-field">
+            <label htmlFor="round-id">Round number</label>
             <input
               id="round-id"
+              aria-invalid={!!roundError}
+              aria-describedby={roundError ? "round-id-error" : undefined}
               inputMode="numeric"
               value={roundInput}
-              onChange={(e) => setRoundInput(e.target.value)}
+              onChange={(e) => {
+                setRoundInput(e.target.value);
+                setRoundError("");
+              }}
               placeholder="1"
             />
-          </label>
+            {roundError && (
+              <p id="round-id-error" className="error">
+                {roundError}
+              </p>
+            )}
+          </div>
           <button className="button" type="submit">
             Inspect round
           </button>
@@ -765,11 +806,6 @@ export function RoundsPage({ rt, state, wallet }: PageProps) {
           </Empty>
         )}
       </section>
-      {error && (
-        <p role="alert" className="error">
-          {error}
-        </p>
-      )}
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { parseUnits, type Address } from "viem";
 import {
@@ -25,14 +25,49 @@ import {
 } from "./trade";
 import { useTransactions } from "./Transactions";
 import { amount, exact, date, DataRow, Notice, AddressLink } from "./ui";
+type QuotedForm = Quote & {
+  generation: number;
+  form: { buy: boolean; input: string; slippage: string; minutes: string };
+};
 export function TradePage({ rt, state, wallet }: PageProps) {
   const [buy, setBuy] = useState(true),
     [input, setInput] = useState(""),
     [slippage, setSlippage] = useState(""),
     [minutes, setMinutes] = useState("5"),
-    [quote, setQuote] = useState<Quote>(),
+    [quoteResult, setQuote] = useState<QuotedForm>(),
     [error, setError] = useState(""),
     [quoting, setQuoting] = useState(false);
+  const generation = useRef(0);
+  const currentForm = useRef({ buy, input, slippage, minutes });
+  currentForm.current = { buy, input, slippage, minutes };
+  // Also invalidate callbacks retained by an open transaction review on navigation.
+  useEffect(
+    () => () => {
+      generation.current++;
+    },
+    [],
+  );
+  function matchesForm(q: QuotedForm) {
+    const f = currentForm.current;
+    return (
+      q.generation === generation.current &&
+      q.buy === f.buy &&
+      q.zeroForOne === f.buy &&
+      q.form.buy === f.buy &&
+      q.form.input === f.input &&
+      q.amount === parseUnits(f.input, 18) &&
+      q.form.slippage === f.slippage &&
+      q.slippageBps === Number(f.slippage) &&
+      q.form.minutes === f.minutes
+    );
+  }
+  function requireCurrentQuote(q: QuotedForm) {
+    if (!matchesForm(q))
+      throw Error("Trade changed. Get a fresh quote before continuing.");
+    assertFreshQuote(q);
+  }
+  const quote =
+    quoteResult && matchesForm(quoteResult) ? quoteResult : undefined;
   const tx = useTransactions();
   const s = state.data;
   const pair = rt.d.poolKey.currency0;
@@ -60,10 +95,14 @@ export function TradePage({ rt, state, wallet }: PageProps) {
     retry: 1,
   });
   function reset() {
+    generation.current++;
     setQuote(undefined);
     setError("");
+    setQuoting(false);
   }
   async function getQuote() {
+    const request = ++generation.current;
+    const form = { buy, input, slippage, minutes };
     setError("");
     setQuote(undefined);
     setQuoting(true);
@@ -71,6 +110,7 @@ export function TradePage({ rt, state, wallet }: PageProps) {
       if (!input || !slippage)
         throw Error("Enter an amount and select your slippage.");
       const fresh = await snapshot(rt);
+      if (request !== generation.current) return;
       if (!fresh.integrity) throw Error("Deployment verification failed.");
       if (!fresh.token.trading)
         throw Error(
@@ -109,11 +149,13 @@ export function TradePage({ rt, state, wallet }: PageProps) {
         deadline: fresh.block.timestamp + BigInt(Number(minutes) * 60),
         buy,
         slippageBps: Number(slippage),
+        generation: request,
+        form,
       });
     } catch (e) {
-      setError(errText(e));
+      if (request === generation.current) setError(errText(e));
     } finally {
-      setQuoting(false);
+      if (request === generation.current) setQuoting(false);
     }
   }
   const quoteExpired =
@@ -153,24 +195,25 @@ export function TradePage({ rt, state, wallet }: PageProps) {
                         ? "This quote expired. Get a fresh quote."
                         : "";
   async function approval(kind: "erc20" | "permit") {
-    if (!quote || baseBlocked) return;
+    if (!quote || !matchesForm(quote) || baseBlocked) return;
     const q = quote;
-    const tokenName = inputSymbol;
+    const tokenName = q.buy ? "FWA" : "MAD";
+    const tokenAddress = q.buy ? pair : rt.addresses.MadToken;
     const spender =
       kind === "erc20"
         ? rt.d.network.uniswapV4.permit2
         : rt.d.network.uniswapV4.universalRouter;
     await tx.prepare({
       title: `Approve ${exact(q.amount)} ${tokenName}`,
-      address: kind === "erc20" ? inputToken : rt.d.network.uniswapV4.permit2,
+      address: kind === "erc20" ? tokenAddress : rt.d.network.uniswapV4.permit2,
       abi: kind === "erc20" ? ERC20 : PERMIT2,
       functionName: "approve",
       args:
         kind === "erc20"
           ? [spender, q.amount]
-          : [inputToken, spender, q.amount, Number(q.deadline)],
+          : [tokenAddress, spender, q.amount, Number(q.deadline)],
       details: [
-        { label: "Token", value: inputToken },
+        { label: "Token", value: tokenAddress },
         { label: "Spender", value: spender },
         {
           label: "Exact approval",
@@ -192,7 +235,7 @@ export function TradePage({ rt, state, wallet }: PageProps) {
         },
       ],
       check: (fresh) => {
-        assertFreshQuote(q);
+        requireCurrentQuote(q);
         if (!fresh.token.trading) throw Error("Trading is closed.");
       },
       onConfirmed: () => {
@@ -202,24 +245,33 @@ export function TradePage({ rt, state, wallet }: PageProps) {
     });
   }
   async function swap() {
-    if (!quote || baseBlocked || ercNeeded || permitNeeded) return;
+    if (
+      !quote ||
+      !matchesForm(quote) ||
+      baseBlocked ||
+      ercNeeded ||
+      permitNeeded
+    )
+      return;
     const q = quote;
+    const quoteInputSymbol = q.buy ? "FWA" : "MAD";
+    const quoteOutputSymbol = q.buy ? "MAD" : "FWA";
     const key = rt.d.poolKey;
     await tx.prepare({
-      title: `Swap ${inputSymbol} for ${outputSymbol}`,
+      title: `Swap ${quoteInputSymbol} for ${quoteOutputSymbol}`,
       address: rt.d.network.uniswapV4.universalRouter,
       abi: ROUTER,
       functionName: "execute",
       args: routerArguments(key, q),
       details: [
-        { label: "Input", value: `${exact(q.amount)} ${inputSymbol}` },
+        { label: "Input", value: `${exact(q.amount)} ${quoteInputSymbol}` },
         {
           label: "Expected output",
-          value: `${exact(q.output)} ${outputSymbol}`,
+          value: `${exact(q.output)} ${quoteOutputSymbol}`,
         },
         {
           label: "Minimum output",
-          value: `${exact(q.minimum)} ${outputSymbol} (${q.minimum} base units)`,
+          value: `${exact(q.minimum)} ${quoteOutputSymbol} (${q.minimum} base units)`,
         },
         { label: "Slippage", value: `${q.slippageBps / 100}%` },
         { label: "Deadline", value: date(q.deadline) },
@@ -231,10 +283,11 @@ export function TradePage({ rt, state, wallet }: PageProps) {
         },
       ],
       check: async (fresh, address) => {
-        assertFreshQuote(q);
+        requireCurrentQuote(q);
         if (!fresh.token.trading || !fresh.routerApproved)
           throw Error("Trading or router permission changed.");
         const ws = await walletState(rt, address, fresh.round);
+        requireCurrentQuote(q);
         if ((q.buy ? ws.fwa : ws.mad) < q.amount)
           throw Error("Input balance is insufficient.");
         if (!q.buy && ws.frozenUntil > fresh.block.timestamp)

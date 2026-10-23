@@ -333,17 +333,6 @@ textarea {
 .wallet-control {
   position: relative;
 }
-.wallet-error {
-  position: absolute;
-  inset-block-start: 100%;
-  inset-inline-end: 0;
-  width: min(300px, 75vw);
-  background: white;
-  padding: 12px;
-  color: var(--danger);
-  font-size: var(--size-label);
-  z-index: 3;
-}
 .workspace main {
   padding: 22px 40px 0;
   max-width: 1440px;
@@ -951,7 +940,7 @@ footer a {
   align-items: end;
   max-width: 520px;
 }
-.inline-form label {
+.inline-form .id-field {
   flex: 1;
   margin: 0;
 }

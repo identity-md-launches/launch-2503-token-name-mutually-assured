@@ -191,13 +191,15 @@ try {
   await page
     .getByRole("button", { name: "Test browser wallet", exact: true })
     .click();
+  await page.locator(".wallet-button").click();
   await page
-    .getByRole("button", { name: "Switch to Ethereum", exact: true })
+    .getByRole("dialog", { name: "Connected wallet", exact: true })
     .waitFor();
   results.push({ name: "wrong-network control present", passed: true });
   await page
     .getByRole("button", { name: "Switch to Ethereum", exact: true })
     .click();
+  await page.keyboard.press("Escape");
   await page
     .getByText("This wallet has no verified contract-owner role.")
     .waitFor();

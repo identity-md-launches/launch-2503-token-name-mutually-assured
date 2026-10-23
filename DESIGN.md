@@ -39,10 +39,10 @@ At 840px the rail becomes a compact header and six-item navigation row. Labels s
 
 ## Components
 
-- `WalletControl`: one connect control, discovered extension identities, local vendor marks, mobile wallet links, Coinbase Smart Wallet, network switching and disconnect. Native modal dialog provides background inertness and focus behavior.
+- `WalletControl`: one connect control, discovered extension identities, local vendor marks, mobile wallet links, Coinbase Smart Wallet, network switching and disconnect. The connected header control opens the dialog on every network; a wrong-network label identifies the need to switch. Switch rejection stays inside the dialog alongside Disconnect, clears on close, and never floats over navigation. Native modal dialog provides background inertness and focus behavior.
 - `FreezePage`: labeled target input, live inspection, exact freeze-cost breakdown, current lock and guarded transaction review.
-- `TradePage`: buy/sell selection, amount, explicit slippage selection, deadline, quote details, exact spender approvals and swap review. Closed trading and missing liquidity have written unavailable states.
-- `RoundsPage`: current round conditions, separate spendable budget and claims, NFT purchase/settlement, closed-round lookup, oracle request and award actions, NFT queue.
+- `TradePage`: buy/sell selection, amount, explicit slippage selection, deadline, quote details, exact spender approvals and swap review. Any form change cancels its pending quote generation and clears the displayed result. Approval/review requires the quote to match the current form, including during preflight; review assets come from that quote. Closed trading and missing liquidity have written unavailable states.
+- `RoundsPage`: current round conditions, separate spendable budget and claims, NFT purchase/settlement, closed-round lookup, oracle request and award actions, NFT queue. Acquisition request ID and round number keep separate, adjacent errors associated with their input through `aria-invalid` and `aria-describedby`. Invalid submission focuses the field; editing clears only that field’s error. The round input/error share the existing inline form’s flexible field column.
 - `Transactions`: shared simulation/review/confirmation sequence; exact contract, function, arguments and consequences; persistent pending status; receipt links and retryable unknown confirmation.
 - `Notice`, `DataRow`, `Empty`, `AddressLink`: consistent status, exact data and recovery patterns.
 - `ManagePage`: permission summary for everyone; settings only for verified owners. Current values and consequences precede confirmation.

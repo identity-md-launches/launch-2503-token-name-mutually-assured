@@ -1,0 +1,686 @@
+{
+  "checkedAt": "2026-10-23T21:35:28.504873+00:00",
+  "scope": "Four reported frontend defects; existing contracts, ABIs, runtime handoff, dependencies and build configuration preserved.",
+  "build": {
+    "passed": true,
+    "typecheckPassed": true,
+    "dependencyInstallation": "Unchanged-lockfile npm ci in a temporary copy of web; production export written to repository dist."
+  },
+  "quoteAndEncodingChecks": 142,
+  "baselineReproduction": [
+    {
+      "name": "direction invalidates pending quote",
+      "change": "direction",
+      "obsoleteQuotePublished": true,
+      "review": "Swap MAD for FWA\n\nSimulation passed on Ethereum. State is checked again before your wallet opens.\n\nContract\n0x66a9893cc07d91d95644aedd05d03f95e1dba8af\nFunction\nexecute\nNative value\n0 ETH, plus network gas\nInput\n1 MAD\nExpected output\n0.980561171580534047 FWA\nMinimum output\n0.975658365722631376 FWA (975658365722631376 base units)\nSlippage\n0.5%\nDeadline\n10/23/2026, 9:31:53 PM\nRecipient\n0xcECc29B037f5064fCdF45a5C318F132ef76aA551\nPool\n0x8b1949896490a07cf57cb6e6184c9b616668029d13f66f3df1b0e54d33b7f5d3\nPrice impact\n0% excluding fees\nConfirm in walletCancel review",
+      "encodedInput": "0xa0df17b5ac76ababa36e1450e2cbcd18a620c845",
+      "encodedOutput": "0xc1da7dc8c0e340e5cfb13a739f3cfc057dab8f16"
+    },
+    {
+      "name": "amount invalidates pending quote",
+      "change": "amount",
+      "obsoleteQuotePublished": true
+    },
+    {
+      "name": "slippage invalidates pending quote",
+      "change": "slippage",
+      "obsoleteQuotePublished": true
+    },
+    {
+      "name": "deadline invalidates pending quote",
+      "change": "deadline",
+      "obsoleteQuotePublished": true
+    },
+    {
+      "name": "wrong network rejection/disconnect/navigation at 320",
+      "disconnectVisible": false,
+      "nav": [
+        {
+          "href": "#freeze",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#trade",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        },
+        {
+          "href": "#rounds",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        },
+        {
+          "href": "#activity",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        },
+        {
+          "href": "#protocol",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        },
+        {
+          "href": "#manage",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        }
+      ]
+    },
+    {
+      "name": "wrong network rejection/disconnect/navigation at 390",
+      "disconnectVisible": false,
+      "nav": [
+        {
+          "href": "#freeze",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#trade",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        },
+        {
+          "href": "#rounds",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        },
+        {
+          "href": "#activity",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        },
+        {
+          "href": "#protocol",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        },
+        {
+          "href": "#manage",
+          "hit": false,
+          "interceptedBy": "wallet-error"
+        }
+      ]
+    },
+    {
+      "name": "wrong network rejection/disconnect/navigation at 1440",
+      "disconnectVisible": false,
+      "nav": [
+        {
+          "href": "#freeze",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#trade",
+          "hit": true,
+          "interceptedBy": "selected"
+        },
+        {
+          "href": "#rounds",
+          "hit": true,
+          "interceptedBy": "desktop-nav-label"
+        },
+        {
+          "href": "#activity",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#protocol",
+          "hit": true,
+          "interceptedBy": "desktop-nav-label"
+        },
+        {
+          "href": "#manage",
+          "hit": true,
+          "interceptedBy": ""
+        }
+      ]
+    },
+    {
+      "name": "Acquisition request ID adjacent accessible error",
+      "invalid": null,
+      "describedBy": null,
+      "inputBottom": 395.859375,
+      "focused": false
+    },
+    {
+      "name": "Round number adjacent accessible error",
+      "invalid": null,
+      "describedBy": null,
+      "inputBottom": 674.859375,
+      "focused": false
+    },
+    {
+      "name": "no uncaught browser errors; all wallet sends prohibited"
+    }
+  ],
+  "revisionChecks": [
+    {
+      "passed": true,
+      "name": "direction invalidates pending quote",
+      "change": "direction",
+      "obsoleteQuotePublished": false
+    },
+    {
+      "passed": true,
+      "name": "amount invalidates pending quote",
+      "change": "amount",
+      "obsoleteQuotePublished": false
+    },
+    {
+      "passed": true,
+      "name": "slippage invalidates pending quote",
+      "change": "slippage",
+      "obsoleteQuotePublished": false
+    },
+    {
+      "passed": true,
+      "name": "deadline invalidates pending quote",
+      "change": "deadline",
+      "obsoleteQuotePublished": false
+    },
+    {
+      "passed": true,
+      "name": "swap preflight rejects a form change before simulation or review"
+    },
+    {
+      "passed": true,
+      "name": "erc20 preflight rejects a form change before simulation or review"
+    },
+    {
+      "passed": true,
+      "name": "permit preflight rejects a form change before simulation or review"
+    },
+    {
+      "passed": true,
+      "name": "round-trip edit cannot revive a cancelled quote or overwrite current feedback"
+    },
+    {
+      "passed": true,
+      "name": "old error cannot revive a cancelled quote or overwrite current feedback"
+    },
+    {
+      "passed": true,
+      "name": "unmount cannot revive a cancelled quote or overwrite current feedback"
+    },
+    {
+      "passed": true,
+      "name": "fresh buy review matches decoded execute assets and exact bounds"
+    },
+    {
+      "passed": true,
+      "name": "fresh sell review matches decoded execute assets and exact bounds"
+    },
+    {
+      "passed": true,
+      "name": "buy erc20 review matches simulated token, exact amount and spender"
+    },
+    {
+      "passed": true,
+      "name": "buy permit review matches simulated token, exact amount and spender"
+    },
+    {
+      "passed": true,
+      "name": "sell erc20 review matches simulated token, exact amount and spender"
+    },
+    {
+      "passed": true,
+      "name": "sell permit review matches simulated token, exact amount and spender"
+    },
+    {
+      "passed": true,
+      "name": "older quote finishing last cannot replace a new quote"
+    },
+    {
+      "passed": true,
+      "name": "wrong network rejection/disconnect/navigation at 320",
+      "disconnectVisible": true,
+      "nav": [
+        {
+          "href": "#freeze",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#trade",
+          "hit": true,
+          "interceptedBy": "selected"
+        },
+        {
+          "href": "#rounds",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#activity",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#protocol",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#manage",
+          "hit": true,
+          "interceptedBy": ""
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "name": "wrong network rejection/disconnect/navigation at 390",
+      "disconnectVisible": true,
+      "nav": [
+        {
+          "href": "#freeze",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#trade",
+          "hit": true,
+          "interceptedBy": "selected"
+        },
+        {
+          "href": "#rounds",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#activity",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#protocol",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#manage",
+          "hit": true,
+          "interceptedBy": ""
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "name": "wrong network rejection/disconnect/navigation at 1440",
+      "disconnectVisible": true,
+      "nav": [
+        {
+          "href": "#freeze",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#trade",
+          "hit": true,
+          "interceptedBy": "selected"
+        },
+        {
+          "href": "#rounds",
+          "hit": true,
+          "interceptedBy": "desktop-nav-label"
+        },
+        {
+          "href": "#activity",
+          "hit": true,
+          "interceptedBy": ""
+        },
+        {
+          "href": "#protocol",
+          "hit": true,
+          "interceptedBy": "desktop-nav-label"
+        },
+        {
+          "href": "#manage",
+          "hit": true,
+          "interceptedBy": ""
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "name": "Acquisition request ID adjacent accessible error",
+      "invalid": "true",
+      "describedBy": "request-id-error",
+      "text": "Enter a positive decimal acquisition request ID.",
+      "inputBottom": 395.859375,
+      "errorTop": 395.859375,
+      "errorBottom": 418.25,
+      "focused": true
+    },
+    {
+      "passed": true,
+      "name": "Round number adjacent accessible error",
+      "invalid": "true",
+      "describedBy": "round-id-error",
+      "text": "Enter a positive decimal round number.",
+      "inputBottom": 715.25,
+      "errorTop": 715.25,
+      "errorBottom": 760.03125,
+      "focused": true
+    },
+    {
+      "passed": true,
+      "name": "field errors clear independently; uint256 overflow stays field-specific"
+    },
+    {
+      "passed": true,
+      "name": "no uncaught browser errors; all wallet sends prohibited"
+    }
+  ],
+  "liveBrowser": [
+    {
+      "name": "live verified snapshot",
+      "passed": true
+    },
+    {
+      "name": "primary action visible at 390",
+      "passed": true,
+      "box": {
+        "x": 43,
+        "y": 495.171875,
+        "width": 304,
+        "height": 48
+      }
+    },
+    {
+      "name": "invalid wallet validation",
+      "passed": true
+    },
+    {
+      "name": "real wallet inspection and closed trading gate",
+      "passed": true
+    },
+    {
+      "name": "wallet chooser reachable",
+      "passed": true
+    },
+    {
+      "name": "wallet chooser Escape closes",
+      "passed": true
+    },
+    {
+      "name": "trade unavailable honestly on live closed pool",
+      "passed": true
+    },
+    {
+      "name": "trade mobile no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "trade focus and skip-link state",
+      "passed": true,
+      "focus": {
+        "active": "button wallet-button",
+        "skipTop": "-80px",
+        "scroll": 0
+      }
+    },
+    {
+      "name": "live unopened round inspection",
+      "passed": true
+    },
+    {
+      "name": "rounds mobile no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "rounds focus and skip-link state",
+      "passed": true,
+      "focus": {
+        "active": "button",
+        "skipTop": "-80px",
+        "scroll": 1204
+      }
+    },
+    {
+      "name": "activity mobile no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "activity focus and skip-link state",
+      "passed": true,
+      "focus": {
+        "active": "",
+        "skipTop": "-80px",
+        "scroll": 0
+      }
+    },
+    {
+      "name": "unauthorized management controls hidden",
+      "passed": true
+    },
+    {
+      "name": "manage mobile no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "manage focus and skip-link state",
+      "passed": true,
+      "focus": {
+        "active": "",
+        "skipTop": "-80px",
+        "scroll": 0
+      }
+    },
+    {
+      "name": "protocol mobile no horizontal overflow",
+      "passed": true
+    },
+    {
+      "name": "protocol focus and skip-link state",
+      "passed": true,
+      "focus": {
+        "active": "",
+        "skipTop": "-80px",
+        "scroll": 0
+      }
+    },
+    {
+      "name": "freeze no overflow at 320",
+      "passed": true
+    },
+    {
+      "name": "freeze no overflow at 1440",
+      "passed": true
+    },
+    {
+      "name": "mobile wallet paths work before RPC reads finish",
+      "passed": true
+    },
+    {
+      "name": "wallet dialog restores keyboard focus",
+      "passed": true
+    },
+    {
+      "name": "no uncaught browser errors",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "wallet": [
+    {
+      "name": "wrong-network control present",
+      "passed": true
+    },
+    {
+      "name": "switch-chain and nonowner role gate",
+      "passed": true
+    },
+    {
+      "name": "account change revalidates actual owner",
+      "passed": true
+    },
+    {
+      "name": "owner action live simulation and explicit review",
+      "passed": true
+    },
+    {
+      "name": "account change during review blocks the write",
+      "passed": true
+    },
+    {
+      "name": "wallet rejection displayed without duplicate send",
+      "passed": true
+    },
+    {
+      "name": "mock confirmed receipt refreshes real reads",
+      "passed": true
+    },
+    {
+      "name": "switching away removes all owner controls",
+      "passed": true
+    },
+    {
+      "name": "RPC failure preserves stale values and disables writes",
+      "passed": true
+    }
+  ],
+  "designProbe": [
+    {
+      "name": "render",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 10647,
+      "output": "renders, no script errors or missing local files\nexternal hosts: ethereum-rpc.publicnode.com"
+    },
+    {
+      "name": "layout",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "no horizontal scroll at 320, 390 or 1440\nno text box overlaps another\nno floating control covers text\nno text cut off by overflow: hidden"
+    },
+    {
+      "name": "targets",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "all 15 controls at least 24px or spaced at 390\n7 under the 44px comfortable size"
+    },
+    {
+      "name": "contrast",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "all measured text meets 4.5:1 (3:1 large)"
+    },
+    {
+      "name": "casing",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "no all-caps text in content"
+    },
+    {
+      "name": "tracking",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "letter-spacing natural in content (display type may run tight)"
+    },
+    {
+      "name": "eyebrows",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "no kicker labels above headings"
+    },
+    {
+      "name": "type-sizes",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 1,
+      "output": "390: 4 sizes in use, 4 with one-offs (12px×25, 14px×15, 20px×4, 32px×6)\n1440: 5 sizes in use, 6 with one-offs (12px×22, 14px×25, 16px×1, 20px×4, 32px×5, 48px×2)\nbar: 6 sizes used more than once, 8 counting one-offs, per width"
+    },
+    {
+      "name": "type-faces",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "families (1): inter\nweights (3): 400, 500, 600\nweight 500 outside mono (noted, not counted): 8, e.g. div.freeze-layout:nth-of-type(3) > section.freeze-panel.panel > form > label \"Target wallet\""
+    },
+    {
+      "name": "glyphs",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "no em dashes or emoji in text"
+    },
+    {
+      "name": "slogans",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "no two-beat taglines"
+    },
+    {
+      "name": "repetition",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 1,
+      "output": "no repeated lines"
+    },
+    {
+      "name": "copy-budget",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "prose on the first screen: 26 words at 390 (bar 60), 33 at 1440 (bar 90)\nall words on the first screen: 74 at 390, 140 at 1440\nwhole page: 194 words, 67 of them prose"
+    },
+    {
+      "name": "chrome",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "border and shadow together: 0\ncards inside cards: 0\ngradient text: 0"
+    },
+    {
+      "name": "motion",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "transition: all on 0 elements\nendless animations: 0; still running with reduced motion: 0"
+    },
+    {
+      "name": "share",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 1,
+      "output": "title \"MAD · Mutually Assured Destruction\", favicon, og:title, og:image, description"
+    }
+  ],
+  "tradeFixture": "Open trading, active liquidity, fee, current timestamp, wallet balances/allowances and execute/approve simulations are controlled test responses. Deployed contract code, ABI hashes, bindings and receiver registration retain actual Ethereum RPC reads.",
+  "publicEthereumSource": "https://ethereum-rpc.publicnode.com",
+  "safety": "No signature or transaction broadcast. New revision suite prohibits every signing/send request. Existing wallet suite uses a synthetic signing provider and receipt for UI checks, with real onchain preflight simulations.",
+  "limitations": [
+    "Mainnet trading remains closed with no active liquidity; no real swap rehearsal.",
+    "Existing large-chunk and browser-externalization build advisories remain.",
+    "Physical wallet apps, native screen readers, WebKit, RTL, native 200% zoom and separate contrast measurements of every error state were not performed.",
+    "Original Solidity checks were not repeated for this frontend-only revision."
+  ],
+  "exportSha256": {
+    "assets/ccip-BZsdsaCe.js": "eff8425d9f5600c5f1d806ad2cff0bca92ffbc479a6d7f252cbe81755d170665",
+    "assets/dist-CAO1aNht.js": "0e850bb4f0bfb434b757f77b705be9674ee279dd57188edcc7fdd83a6a56d2ba",
+    "assets/index-B1hByN7f.js": "53a454b5c6558cadc5099d3fbfb14a35cf3004a670e6fd501a41a4088b81f34b",
+    "assets/index-JWVjHxv5.css": "4bd7c38302102aa35e14c494d22d8fc5d348aed3d1f0ccaf15170d0b4a3484e4",
+    "favicon.svg": "82a4614e5028508fbaf28bef01d05ced1c46a7a99d2540c8371baee6526f1594",
+    "imd-deployment.json": "1d1c67c29a2c7f4b2907af238620e1626333b81cf8866c065eab42df6c2a6642",
+    "index.html": "13d75236b0b657bbc366b8cb43f20be9eb07b8c8576d0e8a792f96ffe00feba3",
+    "share.png": "61a5bfcd6ce298465e0cd470b73d247194b3ff2d8e5bd7dd43bb4ddba526bf8f",
+    "share.svg": "59cb3925c9238162f283398ff6a6f19448c9a148ca43127627228f0475ace4e5",
+    "wallets/LICENSE": "5095037afa1ba03be36e04305c01ec9ee600e14377738a026482b1a888c4e365",
+    "wallets/coinbase.svg": "74b55347075cbbb2a0292cca0f94459d531afd23586ecfd2fcc670236c590439",
+    "wallets/metamask.svg": "892c7dfab8c4ca5682878dda3f42f55a75195d7d365e4adb0832845f3a0a2135",
+    "wallets/phantom.svg": "f841f8112e131259a2e5123177950099c79487e61e77971f4e193e6c374419eb",
+    "wallets/rabby.svg": "dcae4de88ebfa10cffa1fe28df13d7c8c0b40736ef2b704f1f2fc348e777e443"
+  }
+}
