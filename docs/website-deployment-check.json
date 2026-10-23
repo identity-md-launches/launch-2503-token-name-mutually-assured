@@ -1,0 +1,153 @@
+{
+  "verifiedAt": "2026-10-23T20:54:41.539Z",
+  "blockNumber": "26257850",
+  "blockHash": "0x511366ffc7703cdc9bc78622e70137f860910374a44a8de2675a89c7993cff42",
+  "chainId": 1,
+  "source": "https://ethereum-rpc.publicnode.com",
+  "sourceCommit": "a6fb943682094a863650fe8ea42d442edd4e8072",
+  "abiHashes": {
+    "MadToken": {
+      "expected": "0x21bb89ea86eaadaa08951aaea76e57cb5abcdd9c2bcf2047f3dd5bd761501c47",
+      "actual": "0x21bb89ea86eaadaa08951aaea76e57cb5abcdd9c2bcf2047f3dd5bd761501c47",
+      "match": true
+    },
+    "MadHook": {
+      "expected": "0xbf957ee389395fe7bb6bf39df053211d9fdb58d7d8d60f9b9d591ff7d4157691",
+      "actual": "0xbf957ee389395fe7bb6bf39df053211d9fdb58d7d8d60f9b9d591ff7d4157691",
+      "match": true
+    }
+  },
+  "contracts": {
+    "MadToken": {
+      "address": "0xc1da7dc8c0e340e5cfb13a739f3cfc057dab8f16",
+      "codeHash": "0xa700f854efeacdd03c5ba990fffc0b7162cec17370370124c90dd3d28d883404",
+      "codeBytes": 9333,
+      "codeMatchesSource": true,
+      "owner": "0xFc3C962FAD2C1cC77f1a0d46e7B8a2De79A21774",
+      "factory": "0x12C63b581d07093F6126bc02263c58f7EadaA96F",
+      "trading": false,
+      "currentRound": "0",
+      "poolId": "0x8b1949896490a07cf57cb6e6184c9b616668029d13f66f3df1b0e54d33b7f5d3",
+      "hook": "0x21f193a486861a5CE45f83802F3c4B993110A0Cc",
+      "helper": "0x066bE66b7D1576d51bD6b73019678Bd4a9E44536",
+      "swarm": "0x2EA9ed9f8ef9c11EAE2f766C427d8c071b00AA2a",
+      "decimals": 18,
+      "totalSupply": "1000000000000000000000000000",
+      "useGlobalDistributors": true
+    },
+    "MadHook": {
+      "address": "0x21f193a486861a5ce45f83802f3c4b993110a0cc",
+      "codeHash": "0x63d30de30e54cfe68d655696614fc84f5fa784a324c70317abc95400c128b9e1",
+      "codeBytes": 12577,
+      "codeMatchesSource": true,
+      "owner": "0xFc3C962FAD2C1cC77f1a0d46e7B8a2De79A21774",
+      "factory": "0x12C63b581d07093F6126bc02263c58f7EadaA96F",
+      "token": "0xc1DA7dC8C0E340E5cFB13a739f3cFC057DAb8f16",
+      "poolId": "0x8b1949896490a07cf57cb6e6184c9b616668029d13f66f3df1b0e54d33b7f5d3",
+      "initialized": true,
+      "PLAYGROUND": "0x04454514ad6dc4C01d7064C308F8853183FDD39C",
+      "poolManager": "0x000000000004444c5dc75cB358380D2e3dE08A90",
+      "feeBps": 9900,
+      "conversionSqrtPriceLimitX96": "0",
+      "minEthPerFwaX18": "0",
+      "playgroundFwaClaims": "0",
+      "nftFwaClaims": "0",
+      "nftEthClaims": "0",
+      "pendingBurnClaims": "0",
+      "totalBurned": "0",
+      "ethFwaPool": [
+        "0x0000000000000000000000000000000000000000",
+        "0xa0Df17B5aC76ABaBA36E1450E2cbCd18A620C845",
+        0,
+        60,
+        "0x2C67ebA8A50AF0dB5Fba55F725247a75CbDA6444"
+      ]
+    },
+    "MadRewards": {
+      "address": "0x066bE66b7D1576d51bD6b73019678Bd4a9E44536",
+      "codeHash": "0x9b52aac729741314b45cf34334aa362b8d5a6076f96b374459e87c1c9cf5899d",
+      "codeBytes": 18020,
+      "codeMatchesSource": true,
+      "owner": "0xFc3C962FAD2C1cC77f1a0d46e7B8a2De79A21774",
+      "hook": "0x21f193a486861a5CE45f83802F3c4B993110A0Cc",
+      "token": "0xc1DA7dC8C0E340E5cFB13a739f3cFC057DAb8f16",
+      "budget": "0",
+      "prizeCount": "0",
+      "nextPrize": "0",
+      "fwaV2": "0x958C41181182e76F221331b2755b77D9e1426A98",
+      "imd": "0xD34a99Bc0f67aE1bbd63C660e6d0b0dd03E263B7",
+      "intake": "0xa43e6F75ee006411F79Ac1C84120606C2330DE82",
+      "oracleSigner": "0x5598Aa9146215Bc13eb26f2c692Ad1461Fd32982",
+      "action": "0x6f7261636c652e72657175657374406f7261636c652d31000000000000000000",
+      "acquisitionFeeMargin": "1000000000000000",
+      "acquisitionSlippageBps": "500"
+    }
+  },
+  "routeCode": {
+    "poolManager": {
+      "address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+      "codeHash": "0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293",
+      "codeBytes": 24009
+    },
+    "universalRouter": {
+      "address": "0x66a9893cc07d91d95644aedd05d03f95e1dba8af",
+      "codeHash": "0x6a5f46971b50c6e1b7eef97902311444e479d734e4f80ad88367783cf373fe7f",
+      "codeBytes": 19499,
+      "matchesPinnedRuntime": true
+    },
+    "quoter": {
+      "address": "0x52f0e24d1c21c8a0cb1e5a5dd6198556bd9e1203",
+      "codeHash": "0x06de58fa119c5deaa7a667fb92d3894e25d9160e62fb82c8d86d43b47eefe441",
+      "codeBytes": 5820
+    },
+    "stateView": {
+      "address": "0x7ffe42c4a5deea5b0fec41c94c136cf115597227",
+      "codeHash": "0xd7947778589cf4aac9a092a4451292a2056380941635ab7006d3c691d8dfd878",
+      "codeBytes": 3531
+    },
+    "positionManager": {
+      "address": "0xbd216513d74c8cf14cf4747e6aaa6420ff64ee9e",
+      "codeHash": "0x77e36c08b19959a30dde46dec9abe6208e371ff2f56884a56fe1e1a53615528b",
+      "codeBytes": 23877
+    },
+    "permit2": {
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "codeHash": "0xc67d1657868aa5146eaf24fb879fb1fdec3d2d493b3683a61c9c2f4fb2851131",
+      "codeBytes": 9152,
+      "matchesPinnedRuntime": true
+    }
+  },
+  "pool": {
+    "poolKey": {
+      "currency0": "0xa0df17b5ac76ababa36e1450e2cbcd18a620c845",
+      "currency1": "0xc1da7dc8c0e340e5cfb13a739f3cfc057dab8f16",
+      "fee": 12500,
+      "tickSpacing": 60,
+      "hooks": "0x21f193a486861a5ce45f83802f3c4b993110a0cc"
+    },
+    "poolId": "0x8b1949896490a07cf57cb6e6184c9b616668029d13f66f3df1b0e54d33b7f5d3",
+    "slot0": [
+      "1771595571142957102961017161608",
+      62149,
+      0,
+      12500
+    ],
+    "liquidity": "0",
+    "routerApproved": true
+  },
+  "revenue": {
+    "hub": "0xdd4a83daf532778c55f8806c9adf9a0f0ebb62de",
+    "receiver": "0x04454514ad6dc4c01d7064c308f8853183fdd39c",
+    "projectId": "3",
+    "creator": "0xFc3C962FAD2C1cC77f1a0d46e7B8a2De79A21774",
+    "registeredReceiver": "0x04454514ad6dc4C01d7064C308F8853183FDD39C",
+    "receiverPlayground": "0xdD4A83daf532778C55F8806C9ADf9A0f0ebb62dE",
+    "launchTransactionFrom": "0xcecc29b037f5064fcdf45a5c318f132ef76aa551",
+    "parentPaidBy": "0x04454514ad6dc4c01d7064c308f8853183fdd39c",
+    "parentPaidByEvidence": {
+      "source": "https://github.com/identity-md-launches/launch-2503-token-name-mutually-assured/pull/1",
+      "statement": "The complete original objective explicitly identifies project 3’s receiver as the IMD payer.",
+      "limit": "No separate protocol payment receipt was supplied. Receiver identity and project registration are independently checked onchain."
+    }
+  }
+}

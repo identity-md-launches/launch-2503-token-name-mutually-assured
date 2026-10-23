@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "launchId": "90dc10cc-f568-4a96-95ca-6c718e5856f2",
+  "chainId": 1,
+  "repoUrl": "https://github.com/identity-md-launches/launch-2503-token-name-mutually-assured",
+  "sourceCommit": "a6fb943682094a863650fe8ea42d442edd4e8072",
+  "attestationHash": "28faf9ead8425b375764d338e5ebf29f66b85dacc2c4c15dbea0bc434454851c",
+  "manifest": {
+    "kind": "univ4_hook",
+    "hook": {
+      "contract": "MadHook",
+      "constructorArgs": [
+        "$poolManager",
+        "$token",
+        "$factory"
+      ],
+      "permissions": [
+        "beforeInitialize",
+        "beforeSwap",
+        "afterSwap",
+        "beforeSwapReturnDelta",
+        "afterSwapReturnDelta"
+      ]
+    },
+    "token": {
+      "contract": "MadToken",
+      "name": "Mutually Assured Destruction",
+      "symbol": "MAD",
+      "decimals": 18,
+      "constructorArgs": [],
+      "totalSupply": "1000000000000000000000000000"
+    },
+    "pool": {
+      "pairedCurrency": "0xa0df17b5ac76ababa36e1450e2cbcd18a620c845",
+      "fee": 12500,
+      "tickSpacing": 60,
+      "initialPrice": "79228162514264337593543950336"
+    },
+    "notes": "MadToken is a Solady ERC20 whose no-argument constructor mints 1,000,000,000 MAD with 18 decimals to msg.sender and records that deployer as factory. There is no later mint or transfer tax. MadToken, MadHook and the constructor-deployed MadRewards inherit the fixed owner 0xfc3c962fad2c1cc77f1a0d46e7b8a2de79a21774; none takes an owner constructor argument. Token deployment and factory initialization must occur in the same transaction: beforeInitialize authenticates the PoolManager, factory and MAD/FWA key at fee 12500 and spacing 60, then binds once using the token's transient constructor bootstrap. The factory must fund the authenticated swarm distributor before binding for its identity to be captured; its outflows remain locked until the owner irreversibly enables trading. Frozen senders are checked before exemptions; PoolManager transfers consume this pool's signed transient net MAD allowance except factory liquidity and fee collection. Other transfers require distributor exemption or direct no-code wallet participation. Buys require an approved take-only router; Universal Router starts approved. Distributor custody, the registry and approved routers are trusted. A direct wallet freeze costs floor(target balance/100), burns floor(cost/2), credits the rest to the target and resets its freeze to 24 hours. Only the exact internal freeze payment bypasses ordinary gates. MadHook charges FWA fees in both directions and exact modes, decaying from 99% to 1% over 1800 seconds after enablement, in addition to the pool's 1.25% LP fee. Permanent revenue is floor(gross FWA base/100), split equally with any odd wei going to NFTs; excess fees are burned as FWA in the same swap. Public payout redeems only Playground FWA claims directly from PoolManager to the fixed receiver 0x04454514ad6dc4c01d7064c308f8853183fdd39c. Only NFT FWA claims convert on the configured ETH/FWA market during a MAD swap. Owner conversion bounds start unset and must be configured; unsold claims wait, and only received ETH funds NFT purchases. MadRewards supports public FWA V2 purchases, ungated in-window NFT settlement, refunds and round awards. Closing requires a kept NFT, at least 7200 blocks and leader spending of at least 1000 MAD. Oracle requests use donated IMD after an eight-block delay; the saved leader is the fallback after 72 hours without a valid winner. Keeper calls and valid external protocol settings remain necessary. The manifest initialPrice is the required reference value; deployment derives the opening price from launch policy and token ordering."
+  },
+  "contracts": [
+    {
+      "name": "MadToken",
+      "address": "0xc1da7dc8c0e340e5cfb13a739f3cfc057dab8f16",
+      "txHash": "0x52141faf6d41d0031ec4cf44164c768b2c34d66ec81e07294fadac518f5aeeb3",
+      "blockNumber": 26257541,
+      "creationCodeHash": "c070c9766f61429033848bb501a986ebe577bb84a9a9d96a34c2e66cae58c61c",
+      "abiHash": "21bb89ea86eaadaa08951aaea76e57cb5abcdd9c2bcf2047f3dd5bd761501c47"
+    },
+    {
+      "name": "MadHook",
+      "address": "0x21f193a486861a5ce45f83802f3c4b993110a0cc",
+      "txHash": "0x52141faf6d41d0031ec4cf44164c768b2c34d66ec81e07294fadac518f5aeeb3",
+      "blockNumber": 26257541,
+      "creationCodeHash": "ef499d43dfcee6353567022c273719acaf8786d1eadc29b1308a24a56fa64f5c",
+      "abiHash": "bf957ee389395fe7bb6bf39df053211d9fdb58d7d8d60f9b9d591ff7d4157691"
+    }
+  ],
+  "abiInstructions": "Build ABIs from this exact source commit; compare canonicalKeccak(abi) with abiHash. Verify deployed code on the stated chain before enabling transactions.",
+  "network": {
+    "chainId": 1,
+    "name": "Ethereum",
+    "testnet": false,
+    "rpcUrls": [
+      "https://ethereum-rpc.publicnode.com",
+      "https://eth.drpc.org"
+    ],
+    "explorer": "https://etherscan.io",
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "faucets": [],
+    "uniswapV4": {
+      "poolManager": "0x000000000004444c5dc75cb358380d2e3de08a90",
+      "universalRouter": "0x66a9893cc07d91d95644aedd05d03f95e1dba8af",
+      "quoter": "0x52f0e24d1c21c8a0cb1e5a5dd6198556bd9e1203",
+      "stateView": "0x7ffe42c4a5deea5b0fec41c94c136cf115597227",
+      "positionManager": "0xbd216513d74c8cf14cf4747e6aaa6420ff64ee9e",
+      "permit2": "0x000000000022d473030f116ddee9f6b43ac78ba3"
+    },
+    "pairToken": {
+      "address": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+      "symbol": "IMD",
+      "name": "Identity.md",
+      "decimals": 18
+    },
+    "otherPairTokens": [
+      {
+        "id": "fwa",
+        "address": "0xa0df17b5ac76ababa36e1450e2cbcd18a620c845",
+        "symbol": "FWA",
+        "name": "Fake World Assets",
+        "decimals": 18
+      }
+    ]
+  },
+  "walletAddChain": {
+    "chainId": "0x1",
+    "chainName": "Ethereum",
+    "rpcUrls": [
+      "https://ethereum-rpc.publicnode.com",
+      "https://eth.drpc.org"
+    ],
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockExplorerUrls": [
+      "https://etherscan.io"
+    ]
+  },
+  "poolKey": {
+    "currency0": "0xa0df17b5ac76ababa36e1450e2cbcd18a620c845",
+    "currency1": "0xc1da7dc8c0e340e5cfb13a739f3cfc057dab8f16",
+    "fee": 12500,
+    "tickSpacing": 60,
+    "hooks": "0x21f193a486861a5ce45f83802f3c4b993110a0cc"
+  },
+  "poolId": "0x8b1949896490a07cf57cb6e6184c9b616668029d13f66f3df1b0e54d33b7f5d3",
+  "derivedContracts": {
+    "MadRewards": "0x066bE66b7D1576d51bD6b73019678Bd4a9E44536"
+  },
+  "revenue": {
+    "hub": "0xdd4a83daf532778c55f8806c9adf9a0f0ebb62de",
+    "receiver": "0x04454514ad6dc4c01d7064c308f8853183fdd39c",
+    "projectId": 3
+  },
+  "verification": {
+    "abiHashes": {
+      "MadToken": {
+        "expected": "0x21bb89ea86eaadaa08951aaea76e57cb5abcdd9c2bcf2047f3dd5bd761501c47",
+        "actual": "0x21bb89ea86eaadaa08951aaea76e57cb5abcdd9c2bcf2047f3dd5bd761501c47",
+        "match": true
+      },
+      "MadHook": {
+        "expected": "0xbf957ee389395fe7bb6bf39df053211d9fdb58d7d8d60f9b9d591ff7d4157691",
+        "actual": "0xbf957ee389395fe7bb6bf39df053211d9fdb58d7d8d60f9b9d591ff7d4157691",
+        "match": true
+      }
+    },
+    "routeCodeHashes": {
+      "poolManager": "0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293",
+      "universalRouter": "0x6a5f46971b50c6e1b7eef97902311444e479d734e4f80ad88367783cf373fe7f",
+      "quoter": "0x06de58fa119c5deaa7a667fb92d3894e25d9160e62fb82c8d86d43b47eefe441",
+      "stateView": "0xd7947778589cf4aac9a092a4451292a2056380941635ab7006d3c691d8dfd878",
+      "positionManager": "0x77e36c08b19959a30dde46dec9abe6208e371ff2f56884a56fe1e1a53615528b",
+      "permit2": "0xc67d1657868aa5146eaf24fb879fb1fdec3d2d493b3683a61c9c2f4fb2851131"
+    },
+    "codeHashes": {
+      "MadToken": "0xa700f854efeacdd03c5ba990fffc0b7162cec17370370124c90dd3d28d883404",
+      "MadHook": "0x63d30de30e54cfe68d655696614fc84f5fa784a324c70317abc95400c128b9e1",
+      "MadRewards": "0x9b52aac729741314b45cf34334aa362b8d5a6076f96b374459e87c1c9cf5899d"
+    },
+    "blockNumber": "26257850"
+  }
+}

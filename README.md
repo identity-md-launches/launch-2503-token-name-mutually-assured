@@ -1,6 +1,67 @@
 # Mutually Assured Destruction (MAD)
 
-Ethereum contracts for paid holder freezes and NFT prizes. This repository includes all Solidity dependencies as ordinary source files; verification needs no network. It contains no deployment transaction or launch manifest.
+## Website continuation
+
+The complete wallet-connected website is in `web/`; its production static export is in repo-root `dist/`. It includes Freeze, Trade, NFT rewards, Activity, How it works and Manage screens. It uses the existing Ethereum deployment and its FWA pair.
+
+### Install, rebuild and preview
+
+From the repository root, with Node 22 or newer:
+
+```sh
+npm --prefix web ci
+npm --prefix web run typecheck
+npm --prefix web run build
+npm --prefix web run preview
+```
+
+The preview command serves the export locally, normally on port 4173. For source development, use `npm --prefix web run dev`. The static host serves the committed `dist/`; no backend or hosting action is required from this project. Vite uses `base: './'`, local assets and hash navigation, so the export supports a gateway subpath without server rewrites.
+
+`dist/imd-deployment.json` is copied from `web/public/imd-deployment.json` at build time. The browser loads addresses, the exact network block, wallet chain parameters and the verified pool key from that file. Source-derived ABIs are under `docs/abi/` and `web/src/abi/`. No wallet secret or provider key is needed.
+
+### What works and what is currently gated
+
+- Inspect any wallet’s MAD balance, freeze cost and lock before connecting. After connection, show MAD/FWA/ETH balances, round spending and eligibility. Freezes require a direct wallet with no contract code; smart accounts cannot bypass that rule.
+- Offer MAD/FWA buys and sells through the verified Universal Router. Require selected slippage, positive minimum output, fresh quotes and deadlines. Exact-amount ERC20 and Permit2 approvals are separate reviewed transactions. Quotes are deliberately limited to the current tick interval; reduce an amount that crosses it. Native ETH/MAD trading is not offered.
+- Inspect reward budgets, acquisition quotes and blackout status, settle allocations by request ID, recover current-source refunds, redeem NFT ETH claims, close eligible rounds, request winners and deliver prizes. These public keeper calls use existing protocol budgets; the caller pays network gas.
+- Show a bounded, genuine event history with transaction links. Errors remain unavailable rather than becoming zero balances or empty history.
+- Show supported management forms only to current onchain owners. Recheck roles and deployment state, simulate before review, recheck and simulate before submission, and request an explicit wallet confirmation for each write. Pending, rejected, reverted, replaced, cancelled and unknown confirmations have distinct handling.
+
+At the recorded verification block, trading was **closed**, active liquidity was **zero**, NFT conversion bounds were **unset** and the reward budget had **no spendable ETH**. The website shows these real conditions. It cannot enable trading on behalf of the owner, supply liquidity or choose conversion bounds. Those are existing protocol decisions, not missing website configuration.
+
+The distributor’s address is visible, but claims cannot be reconstructed without its verified ABI, claim tree and wallet proofs. The website explains that limitation. Historical acquisition settlements use the purchase’s saved FWA source and that source’s live settlement window.
+
+### Revenue and deployment verification
+
+`docs/website-deployment-check.json` records source/runtime comparison, both exact canonical ABI hashes, contract bindings, router/Permit2 runtime checks, live settings and receiver registration. The fixed receiver’s `playground()` and `projectId()` match the supplied hub and project 3, and `hub.projects(3).receiver` points back to it. The complete [parent objective](https://github.com/identity-md-launches/launch-2503-token-name-mutually-assured/pull/1) explicitly identifies this receiver as the IMD payer; a separate payment receipt was not supplied.
+
+Hook `payout()` sends only Playground FWA claims directly to this immutable receiver. Receiver-held FWA is not claimable ETH. Adapter configuration/conversion and downstream ETH claims belong to the existing hub/receiver contracts; the site does not add a payment flow or a conversion adapter. NFT FWA/ETH claims and spendable reward ETH are shown separately. The rules screen explains the existing downstream split and native-ETH deposit behavior.
+
+To reproduce verification, first run `forge build --offline`, then:
+
+```sh
+npm --prefix web run verify:deployment
+```
+
+This read-only check uses the public RPC in the saved handoff by default. An optional RPC argument is supported for a worker-provided relay; its address is never embedded in the export or evidence. The script checks compiled ABI hashes and runtime code with compiler-declared immutable regions masked, verifies bindings, and regenerates the public handoff and ABI exports. It also works after pinned `.imd/reads` inputs are removed, using the saved handoff. Rebuild `dist/` after regeneration.
+
+### Validation
+
+```sh
+npm --prefix web run test:quotes
+PLAYWRIGHT_BROWSERS_PATH=/opt/imd-tools/ms-playwright node web/scripts/browser-check.mjs
+PLAYWRIGHT_BROWSERS_PATH=/opt/imd-tools/ms-playwright node web/scripts/wallet-check.mjs
+```
+
+The browser scripts use the supplied Playwright module, run their own bounded local static server, and write temporary results to `test/scratch/`. Each accepts an optional public or worker-provided Ethereum RPC argument. The wallet suite uses a clearly identified mock EIP-1193 signing provider and a mock receipt; it never broadcasts a transaction. Its contract reads and preflight simulations use the real Ethereum contracts.
+
+Actual results: production build and typecheck passed; **142** quote/encoding/reference checks passed; **128** existing Solidity tests passed; live browser interactions and wallet-state checks passed; the pinned design probe passed **16/16**. A fresh `npm ci` succeeded and npm audit reported **zero vulnerabilities**. Vite emits a chunk-size advisory and an unused dependency’s browser-externalization advisory; no corresponding browser exception or missing runtime resource was observed.
+
+`DESIGN.md` documents final source tokens and components; `VALIDATION.md` records requirements, six-domain review coverage, fixes and remaining limitations. No real-wallet signing, mainnet swap, physical wallet-app handoff, WebKit, native screen reader or browser-native 200% zoom is claimed. Closed trading and empty active liquidity prevent a live swap rehearsal; the existing offline tests execute the actual deployed Universal Router and Permit2 runtimes for buy/sell/approval behavior.
+
+## Existing contract documentation
+
+Ethereum contracts for paid holder freezes and NFT prizes. This repository includes all Solidity dependencies as ordinary source files; verification needs no network. The existing launch manifest is retained; website runtime configuration comes from the verified deployment handoff.
 
 ## Build and test
 
